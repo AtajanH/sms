@@ -9,6 +9,18 @@ const cors = require("cors");
 
 const PORT = process.env.PORT || 9091;
 
+io.on("connect", (socket) => {
+  console.log(`new client ==> ${socket.id}`);
+
+  // Emit a test message
+  socket.emit("message", "WebSocket server is working!");
+
+  socket.on("message", (data) => {
+      console.log("Received from client:", data);
+  });
+});
+
+
 const vhost = (hostname) => (req, res, next) => {
   const host = req.headers.host.split(":")[0];
   if (host == hostname) {
@@ -63,9 +75,8 @@ app.use(helmet.referrerPolicy({ policy: ["origin", "unsafe-url"] }));
 app.use(helmet.xssFilter());
 
 const start = async () => {
-  server.listen(PORT, "localhost", () =>
-    console.log("server listening on port " + PORT)
-  );
+  server.listen(PORT, () => console.log("server listening on port " + PORT));
+
 
   app.use(function (req, res, next) {
     req.io = io;
@@ -75,7 +86,7 @@ const start = async () => {
   io.on("connect", onConnect);
 
   async function onConnect(socket) {
-    console.log(`new client ==> `, socket.id);
+    console.log(`New client connected: ${socket.id}`);
 
     socket.emit("");
 
