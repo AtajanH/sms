@@ -111,7 +111,7 @@ app.post("/send", async function (req, res) {
   try {
     console.log("..................otp route");
     const random = Math.random().toFixed(5).substr(`-${5}`);
-    const _phone = req.body.phone_number;
+    const _phone = req.body.phone;
     if (!_phone || !/^[6][1-5][0-9]{6}$/g.test(_phone)) {
       return res.status(400).json({ message: "Bad request" });
     }
@@ -150,10 +150,10 @@ app.post("/compare", async function (req, res) {
       console.log("success");
       return res.json({ success: true });
     }
-    console.log("un success");
-    return res.json({ success: false });
+    console.log("unsuccess");
+    return res.status(403).json({ success: false });
   } catch (e) {
-    return res.json({ message: e.message });
+    return res.status(403).json({ message: e.message });
   }
 });
 
