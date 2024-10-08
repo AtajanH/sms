@@ -122,13 +122,15 @@ app.post("/send", async function (req, res) {
   try {
     console.log("..................otp route");
     const random = Math.random().toFixed(5).substr(`-${5}`);
+    console.log(req.body);
     const _phone = req.body.phone;
     if (!_phone || !/^[6][1-5][0-9]{6}$/g.test(_phone)) {
+      console.log("Invalid phone", _phone);
       return res.status(400).json({ message: "Bad request" });
     }
 
     req.io.emit("send", {
-      phone_number: `+993${_phone}`,
+      phone: `+993${_phone}`,
       pass: `Siziň aktiwasiýa koduňyz ${random}`,
     });
     console.log("...............ok");
@@ -137,11 +139,11 @@ app.post("/send", async function (req, res) {
     return res.json({
       success: true,
       message: "otp pass send and save",
-      phone_number: `+993${_phone}`,
+      phone: `+993${_phone}`,
       pass: `Siziň aktiwasiýa koduňyz ${random}`,
     });
   } catch (e) {
-    // console.log("sadfbasjfbhj")
+    console.log("sadfbasjfbhj", e);
     return res.status(400).json({ message: e.message });
   }
 });
@@ -150,7 +152,7 @@ app.post("/send", async function (req, res) {
 app.post("/compare", async function (req, res) {
   try {
     const _phone = req.body.phone_number;
-    const _otp = req.body.pass;
+    const _otp = req.body.message;
     const cacheData = await redis.get(_phone);
     if (!_phone || !/^[6][1-5][0-9]{6}$/g.test(_phone)) {
       return res.status(400).json({ message: "Bad request" });
